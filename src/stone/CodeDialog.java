@@ -15,11 +15,11 @@ public class CodeDialog extends Reader {
 
     public int read(char[] cbuf, int off, int len) throws IOException {
         if (buffer == null) {
-            String in = showDialog();
-            if (in == null)
+            String in = showDialog(); // blocking
+            if (in == null) {
                 return -1;
-            else {
-                print(in);
+            } else {
+                System.out.println(in);
                 buffer = in + "\n";  
                 pos = 0;
             }
@@ -27,14 +27,17 @@ public class CodeDialog extends Reader {
 
         int size = 0;
         int length = buffer.length();
-        while (pos < length && size < len)
+        while (pos < length && size < len) {
             cbuf[off + size++] = buffer.charAt(pos++);
-        if (pos == length)
+        }
+        if (pos == length) {
             buffer = null;
+        }
         return size;
     }
-    protected void print(String s) { System.out.println(s); }
+
     public void close() throws IOException {}
+
     protected String showDialog() {
         JTextArea area = new JTextArea(20, 40);
         JScrollPane pane = new JScrollPane(area);
@@ -42,16 +45,19 @@ public class CodeDialog extends Reader {
                                                   JOptionPane.OK_CANCEL_OPTION,
                                                   JOptionPane.PLAIN_MESSAGE,
                                                   null, null, null);
-        if (result == JOptionPane.OK_OPTION)
+        if (result == JOptionPane.OK_OPTION) {
             return area.getText();
-        else
+        } else {
             return null;
+        }
     }
+
     public static Reader file() throws FileNotFoundException {
         JFileChooser chooser = new JFileChooser();
-        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             return new BufferedReader(new FileReader(chooser.getSelectedFile()));
-        else
+        } else {
             throw new FileNotFoundException("no file specified");
+        }
     }
 }
